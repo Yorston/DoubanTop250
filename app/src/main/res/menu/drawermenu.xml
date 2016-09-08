@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/my_collection"
+            android:title="我的收藏" />
+    </group>
+
+    <item android:title="工具">
+        <menu>
+            <item
+                android:id="@+id/quit"
+                android:title="退出" />
+        </menu>
+    </item>
+
+</menu>
