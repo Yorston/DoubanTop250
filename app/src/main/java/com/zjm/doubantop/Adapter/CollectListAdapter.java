@@ -1,4 +1,4 @@
-package com.zjm.doubantop;
+package com.zjm.doubantop.Adapter;
 
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
@@ -11,20 +11,21 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+import com.zjm.doubantop.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 /**
- * Created by B on 2016/7/28.
+ * Created by B on 2016/9/8.
  */
-public class ListAdapter extends BaseAdapter{
+public class CollectListAdapter extends BaseAdapter{
 
-    private List<HashMap> list = new ArrayList<>();
+    private static CollectListAdapter collectListAdapter = new CollectListAdapter();
     private DisplayImageOptions option;
-    private static ListAdapter adapter = new ListAdapter();
-    private ListAdapter(){
+    private List<HashMap> list = new ArrayList<>();
+    private CollectListAdapter(){
         option = new DisplayImageOptions.Builder()
                 .showImageForEmptyUri(R.mipmap.ic_launcher)
                 .showImageOnFail(R.mipmap.ic_launcher)
@@ -33,18 +34,9 @@ public class ListAdapter extends BaseAdapter{
                 .cacheOnDisk(true)
                 .build();
     }
-    public static ListAdapter getAdapter(){
-        return adapter;
+    public static CollectListAdapter getAdapter(){
+        return collectListAdapter;
     }
-
-    /*public ListAdapter(List<HashMap> list){
-        this.list = list;
-        option = new DisplayImageOptions.Builder()
-                .cacheInMemory(true)
-                .cacheOnDisk(true)
-                .bitmapConfig(Bitmap.Config.RGB_565)
-                .build();
-    }*/
 
     public void setList(List<HashMap> list){
         this.list = list;
@@ -67,27 +59,25 @@ public class ListAdapter extends BaseAdapter{
 
     @Override
     public View getView(int i, View convertview, ViewGroup viewGroup) {
-        ViewHolder holder = null;
+
+        Viewholder viewholder = null;
         LayoutInflater inflacter = LayoutInflater.from(viewGroup.getContext());
         if(convertview == null){
-            holder = new ViewHolder();
+            viewholder = new Viewholder();
             convertview = inflacter.inflate(R.layout.listitem, null);
-            holder.imageview = (ImageView) convertview.findViewById(R.id.imageView);
-            holder.textview = (TextView) convertview.findViewById(R.id.textView);
-            convertview.setTag(holder);
+            viewholder.imageview = (ImageView) convertview.findViewById(R.id.imageView);
+            viewholder.textview = (TextView) convertview.findViewById(R.id.textView);
+            convertview.setTag(viewholder);
         }else {
-            holder = (ViewHolder) convertview.getTag();
+            viewholder = (Viewholder) convertview.getTag();
         }
 
-
-        holder.textview.setText((String)list.get(i).get("BaseInfo"));
+        viewholder.textview.setText((String)list.get(i).get("content"));
         //holder.imageview.setImageBitmap((Bitmap) list.get(i).get("BitMap"));
-        holder.imageview.setTag(list.get(i).get("ImageUrl"));
-        final ViewHolder finalHolder = holder;
+        viewholder.imageview.setTag(list.get(i).get("imageurl"));
+        final Viewholder finalHolder = viewholder;
 
-        //ImageLoader.getInstance().displayImage( (String)list.get(i).get("ImageUrl"), holder.imageview,option);
-
-        ImageLoader.getInstance().loadImage((String)list.get(i).get("ImageUrl"), option, new SimpleImageLoadingListener(){
+        ImageLoader.getInstance().loadImage((String)list.get(i).get("imageurl"), option, new SimpleImageLoadingListener(){
             @Override
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
                 super.onLoadingComplete(imageUri, view, loadedImage);
@@ -99,7 +89,7 @@ public class ListAdapter extends BaseAdapter{
         return convertview;
     }
 
-    public static class ViewHolder{
+    public static class Viewholder{
         public TextView textview;
         public ImageView imageview;
     }

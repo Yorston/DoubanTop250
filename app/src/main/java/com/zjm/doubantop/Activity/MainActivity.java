@@ -21,7 +21,7 @@ import android.widget.ListView;
 
 import com.zjm.doubantop.FileControler;
 import com.zjm.doubantop.JsonBean;
-import com.zjm.doubantop.ListAdapter;
+import com.zjm.doubantop.Adapter.MainListAdapter;
 import com.zjm.doubantop.ListSlideListener;
 import com.zjm.doubantop.NetWork;
 import com.zjm.doubantop.R;
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private List<HashMap> list = new ArrayList();
     private NetWork netWork = new NetWork();
     private ObjectAnimator animator;
-    private ListAdapter listadapter = ListAdapter.getAdapter();
+    private MainListAdapter listadapter = MainListAdapter.getAdapter();
     private FileControler controler = FileControler.getFileControler();
     private ListSlideListener listener = ListSlideListener.getListener();
     private int mTouchSlop;
