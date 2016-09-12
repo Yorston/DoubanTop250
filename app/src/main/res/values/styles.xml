@@ -15,6 +15,9 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="MainActivity" parent="NoActioBar">
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item><!--Drawerlayout汉堡颜色设置所在-->
     </style>
 
@@ -26,6 +29,7 @@
     <style name="MovieDetail" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimaryDark</item>
         <item name="colorPrimaryDark">#00000000</item>
+        <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
 </resources>

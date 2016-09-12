@@ -14,8 +14,10 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -51,6 +53,45 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FileControler controler = FileControler.getFileControler();
     private ListSlideListener listener = ListSlideListener.getListener();
     private int mTouchSlop;
+    private boolean mShow = true;
+    private float mFirstY;
+    private float mCurrentY;
+    private ObjectAnimator mAnimator;
+    private int direction;
+
+    View.OnTouchListener myTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    mFirstY = event.getY();
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    mCurrentY = event.getY();
+                    if (mCurrentY - mFirstY > mTouchSlop) {
+                        direction = 0;// down
+                    } else if (mFirstY - mCurrentY > mTouchSlop) {
+                        direction = 1;// up
+                    }
+                    if (direction == 1) {
+                        if (mShow) {
+                            toolbarAnim(1);//hide
+                            mShow = !mShow;
+                        }
+                    } else if (direction == 0) {
+                        if (!mShow) {
+                            toolbarAnim(0);//show
+                            mShow = !mShow;
+                        }
+                    }
+                    break;
+                case MotionEvent.ACTION_UP:
+                    break;
+            }
+            return false;
+        }
+    };
+
 
     public static void launch(Activity activity){
         Intent intent = new Intent(activity, MainActivity.class);
@@ -119,6 +160,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerlayout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+        View header = new View(this);
+        header.setLayoutParams(new AbsListView.LayoutParams(
+                AbsListView.LayoutParams.MATCH_PARENT,
+                (int) getResources().getDimension(
+                        R.dimen.abc_action_bar_default_height_material)));
+        listview.addHeaderView(header);
+
+        listview.setOnTouchListener(myTouchListener);
+
         listview.setAdapter(listadapter);
         listview.setOnItemClickListener(this);
         navigationView.setNavigationItemSelectedListener(this);
@@ -133,6 +184,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         listview.addFooterView(v);
     }
 
+    private void toolbarAnim(int flag) {
+        if (mAnimator != null && mAnimator.isRunning()) {
+            mAnimator.cancel();
+        }
+        if (flag == 0) {
+            mAnimator = ObjectAnimator.ofFloat(toolbar,
+                    "translationY", toolbar.getTranslationY(), 0);
+        } else {
+            mAnimator = ObjectAnimator.ofFloat(toolbar,
+                    "translationY", toolbar.getTranslationY(),
+                    -toolbar.getHeight());
+        }
+        mAnimator.start();
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void GetBean(JsonBean jsonBean){
         list.addAll(jsonBean.getList());
@@ -144,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        MovieDetailActivity.launch(MainActivity.this, (String)list.get(i).get("MovieCover"), (String)list.get(i).get("MovieTitle"), (String)list.get(i).get("BaseInfo"), (String)list.get(i).get("ImageUrl"));
+        MovieDetailActivity.launch(MainActivity.this, (String)list.get(i - 1).get("MovieCover"), (String)list.get(i - 1).get("MovieTitle"), (String)list.get(i - 1).get("BaseInfo"), (String)list.get(i - 1).get("ImageUrl"));
     }
 
     @Override

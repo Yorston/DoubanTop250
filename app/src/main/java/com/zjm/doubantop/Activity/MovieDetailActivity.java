@@ -44,14 +44,13 @@ public class MovieDetailActivity extends AppCompatActivity{
         intent.putExtra("MovieName", movieName);
         intent.putExtra("Content", content);
         intent.putExtra("MovieUrl", movieUrl);
-        activity.startActivity(intent);
+        activity.startActivityForResult(intent, 101);
     }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.moviedetail);
-
         option = new DisplayImageOptions.Builder()
                 .showImageForEmptyUri(R.mipmap.ic_launcher)
                 .showImageOnFail(R.mipmap.ic_launcher)

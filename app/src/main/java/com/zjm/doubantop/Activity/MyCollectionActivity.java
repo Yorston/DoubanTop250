@@ -1,5 +1,6 @@
 package com.zjm.doubantop.Activity;
 
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -7,7 +8,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -30,6 +33,47 @@ public class MyCollectionActivity extends AppCompatActivity implements AdapterVi
     private DBHelper helper;
     private List<HashMap> collectionlist = new ArrayList<>();
     private CollectListAdapter collectListAdapter = CollectListAdapter.getAdapter();
+    private int itemid = -2;
+    private int mTouchSlop;
+    private boolean mShow = true;
+    private float mFirstY;
+    private float mCurrentY;
+    private ObjectAnimator mAnimator;
+    private int direction;
+
+    View.OnTouchListener myTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    mFirstY = event.getY();
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    mCurrentY = event.getY();
+                    if (mCurrentY - mFirstY > mTouchSlop) {
+                        direction = 0;// down
+                    } else if (mFirstY - mCurrentY > mTouchSlop) {
+                        direction = 1;// up
+                    }
+                    if (direction == 1) {
+                        if (mShow) {
+                            toolbarAnim(1);//hide
+                            mShow = !mShow;
+                        }
+                    } else if (direction == 0) {
+                        if (!mShow) {
+                            toolbarAnim(0);//show
+                            mShow = !mShow;
+                        }
+                    }
+                    break;
+                case MotionEvent.ACTION_UP:
+                    break;
+            }
+            return false;
+        }
+    };
+
     public static void launch(Activity activity){
         Intent intent = new Intent(activity, MyCollectionActivity.class);
         activity.startActivity(intent);
@@ -42,6 +86,16 @@ public class MyCollectionActivity extends AppCompatActivity implements AdapterVi
         helper = new DBHelper(MyCollectionActivity.this);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         listView = (ListView) findViewById(R.id.listview);
+
+        View header = new View(this);
+        header.setLayoutParams(new AbsListView.LayoutParams(
+                AbsListView.LayoutParams.MATCH_PARENT,
+                (int) getResources().getDimension(
+                        R.dimen.abc_action_bar_default_height_material)));
+        listView.addHeaderView(header);
+
+        listView.setOnTouchListener(myTouchListener);
+
         listView.setOnItemClickListener(this);
         listView.setAdapter(collectListAdapter);
         toolbar.setTitle("");
@@ -53,10 +107,21 @@ public class MyCollectionActivity extends AppCompatActivity implements AdapterVi
                 finish();
             }
         });
-        getDataFromDB();
-        collectListAdapter.setList(collectionlist);
-        collectListAdapter.notifyDataSetChanged();
+    }
 
+    private void toolbarAnim(int flag) {
+        if (mAnimator != null && mAnimator.isRunning()) {
+            mAnimator.cancel();
+        }
+        if (flag == 0) {
+            mAnimator = ObjectAnimator.ofFloat(toolbar,
+                    "translationY", toolbar.getTranslationY(), 0);
+        } else {
+            mAnimator = ObjectAnimator.ofFloat(toolbar,
+                    "translationY", toolbar.getTranslationY(),
+                    -toolbar.getHeight());
+        }
+        mAnimator.start();
     }
 
     public void getDataFromDB(){
@@ -78,15 +143,33 @@ public class MyCollectionActivity extends AppCompatActivity implements AdapterVi
             }
         }
         cursor.close();
+        if(collectionlist.size() < 5){
+            listView.setOnTouchListener(null);
+        }
+        collectListAdapter.setList(collectionlist);
+        collectListAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        MovieDetailActivity.launch(MyCollectionActivity.this, (String)collectionlist.get(i).get("coverurl"), (String)collectionlist.get(i).get("title"), (String)collectionlist.get(i).get("content"), (String)collectionlist.get(i).get("imageurl"));
+        MovieDetailActivity.launch(MyCollectionActivity.this, (String)collectionlist.get(i - 1).get("coverurl"), (String)collectionlist.get(i - 1).get("title"), (String)collectionlist.get(i - 1).get("content"), (String)collectionlist.get(i - 1).get("imageurl"));
+        itemid = i - 1;
     }
 
     @Override
     public void startActivityForResult(Intent intent, int requestCode) {
         super.startActivityForResult(intent, requestCode);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if(itemid != -2&&!helper.checkExist((String)collectionlist.get(itemid).get("title"))){
+            collectionlist.remove(itemid);
+            collectListAdapter.notifyDataSetChanged();
+        }
+
+        getDataFromDB();
     }
 }
