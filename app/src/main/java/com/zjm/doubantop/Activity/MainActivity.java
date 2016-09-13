@@ -20,12 +20,15 @@ import android.view.ViewConfiguration;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.zjm.doubantop.FileControler;
+import com.zjm.doubantop.Gudie.HoleBean;
+import com.zjm.doubantop.Gudie.NewbieGuideManager;
 import com.zjm.doubantop.JsonBean;
 import com.zjm.doubantop.Adapter.MainListAdapter;
 import com.zjm.doubantop.ListSlideListener;
-import com.zjm.doubantop.NetWork;
+import com.zjm.doubantop.NetWorkConter.NetWork;
 import com.zjm.doubantop.R;
 
 import org.greenrobot.eventbus.EventBus;
@@ -45,10 +48,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
+
+    private TextView textView;
+
     public static View v;
     private List<HashMap> list = new ArrayList();
-    private NetWork netWork = new NetWork();
-    private ObjectAnimator animator;
+    private NetWork netWork = NetWork.getNetWork();
     private MainListAdapter listadapter = MainListAdapter.getAdapter();
     private FileControler controler = FileControler.getFileControler();
     private ListSlideListener listener = ListSlideListener.getListener();
@@ -161,15 +166,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerlayout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
 
+        textView = (TextView) findViewById(R.id.toolbattitle);
+
         View header = new View(this);
         header.setLayoutParams(new AbsListView.LayoutParams(
                 AbsListView.LayoutParams.MATCH_PARENT,
                 (int) getResources().getDimension(
                         R.dimen.abc_action_bar_default_height_material)));
         listview.addHeaderView(header);
-
         listview.setOnTouchListener(myTouchListener);
-
         listview.setAdapter(listadapter);
         listview.setOnItemClickListener(this);
         navigationView.setNavigationItemSelectedListener(this);
@@ -241,6 +246,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-
-
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if(NewbieGuideManager.isNeverShowed(this, NewbieGuideManager.TYPE_COLLECT)) {
+            new NewbieGuideManager(this, NewbieGuideManager.TYPE_COLLECT).addView(textView,
+                    HoleBean.TYPE_RECTANGLE).show();
+        }
+    }
 }

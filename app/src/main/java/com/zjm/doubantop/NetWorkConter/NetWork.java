@@ -1,9 +1,13 @@
-package com.zjm.doubantop;
+package com.zjm.doubantop.NetWorkConter;
 
 import android.view.View;
 import android.widget.Toast;
 
 import com.zjm.doubantop.Activity.MainActivity;
+import com.zjm.doubantop.FileControler;
+import com.zjm.doubantop.JsonBean;
+import com.zjm.doubantop.ListSlideListener;
+import com.zjm.doubantop.MyApplication;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -12,8 +16,6 @@ import retrofit2.Callback;
 import retrofit2.GsonConverterFactory;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.http.GET;
-import retrofit2.http.Query;
 
 /**
  * Created by B on 2016/7/28.
@@ -21,21 +23,25 @@ import retrofit2.http.Query;
 public class NetWork {
 
     public static int NextStart = 1;
+    private final static String baseurl = "https://api.douban.com/";
+    private NetServiceCenter netService;
 
-    public interface NetService{
-        @GET("v2/movie/top250")
-        Call<JsonBean> GetJson(@Query("start") String start, @Query("count") String count);
+    private NetWork(){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseurl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        netService = retrofit.create(NetServiceCenter.class);
+    }
+
+    private static NetWork netWork = new NetWork();
+
+    public static NetWork getNetWork(){
+        return netWork;
     }
 
     public void GetMsg(final int start, int count){
-
         MainActivity.v.setVisibility(View.VISIBLE);
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.douban.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        NetService netService = retrofit.create(NetService.class);
         Call<JsonBean> call = netService.GetJson(start+"", count+"");
         call.enqueue(new Callback<JsonBean>() {
             @Override
@@ -47,7 +53,6 @@ public class NetWork {
                 if(start == 0){
                    fileControler.WriteFile(bean);
                 }
-
 
                 if(bean.getSubjects().size() == 0){
                     MainActivity.v.setVisibility(View.GONE);

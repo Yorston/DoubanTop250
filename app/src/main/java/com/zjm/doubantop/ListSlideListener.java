@@ -2,12 +2,14 @@ package com.zjm.doubantop;
 
 import android.widget.AbsListView;
 
+import com.zjm.doubantop.NetWorkConter.NetWork;
+
 /**
  * Created by B on 2016/8/1.
  */
 public class ListSlideListener implements AbsListView.OnScrollListener{
 
-    private NetWork netWork = new NetWork();
+    private NetWork netWork = NetWork.getNetWork();
     private int start;
     public static int old_start = 1;
     private int count = 10;
