@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         JsonBean bean = controler.GetFile();
         if(bean != null){
             EventBus.getDefault().post(bean);
-            listener.UpdStart(11);
+            listener.UpdStart(11, false);
             NetWork.NextStart = 11;
             //ListSlideListener.old_start = 11;
         }else{
@@ -250,7 +250,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         if(NewbieGuideManager.isNeverShowed(this, NewbieGuideManager.TYPE_COLLECT)) {
-            new NewbieGuideManager(this, NewbieGuideManager.TYPE_COLLECT).addView(textView,
+            new NewbieGuideManager(this, NewbieGuideManager.TYPE_COLLECT).addView(toolbar,
                     HoleBean.TYPE_RECTANGLE).show();
         }
     }

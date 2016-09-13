@@ -20,8 +20,11 @@ public class ListSlideListener implements AbsListView.OnScrollListener{
         return  listSlideListener;
     }
 
-    public void UpdStart(int start){
+    public void UpdStart(int start, boolean reset_oldstart){
         System.out.println("setStart  " + start);
+        if(reset_oldstart){
+            old_start = old_start - 10;
+        }
         this.start = start;
     }
 

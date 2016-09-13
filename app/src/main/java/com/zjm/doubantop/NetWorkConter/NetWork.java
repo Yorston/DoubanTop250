@@ -58,7 +58,7 @@ public class NetWork {
                     MainActivity.v.setVisibility(View.GONE);
                     Toast.makeText(MyApplication.getContext(),"已经是最后一页",Toast.LENGTH_LONG).show();
                 }else{
-                    listener.UpdStart(NextStart = NextStart + 10);
+                    listener.UpdStart(NextStart = NextStart + 10, false);
 
                     EventBus.getDefault().post(bean);
                 }
@@ -67,7 +67,9 @@ public class NetWork {
 
             @Override
             public void onFailure(Call<JsonBean> call, Throwable t) {
-
+                Toast.makeText(MyApplication.getContext(), "fail", Toast.LENGTH_SHORT).show();
+                ListSlideListener listener = ListSlideListener.getListener();
+                listener.UpdStart(NextStart, true);
             }
         });
 
