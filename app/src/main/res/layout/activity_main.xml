@@ -10,10 +10,9 @@
     tools:openDrawer="start">
 
 <RelativeLayout
+    android:id="@+id/listlayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:clipToPadding="true"
     >
 
     <ListView

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp">
+
+    <TextView
+        android:id="@+id/takevideo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:paddingTop="15dp"
+        android:paddingBottom="17dp"
+        android:background="#FFFFFF"
+        android:text="Take Video"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#dcd8d8"
+        />
+
+    <TextView
+        android:id="@+id/takepicture"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:paddingTop="15dp"
+        android:paddingBottom="17dp"
+        android:background="#FFFFFF"
+        android:text="Take Picture"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#dcd8d8"
+        />
+
+    <TextView
+        android:id="@+id/selectpicture"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:paddingTop="15dp"
+        android:paddingBottom="17dp"
+        android:background="#FFFFFF"
+        android:text="Select Picture"
+        />
+    <TextView
+        android:id="@+id/cancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        android:textSize="16sp"
+        android:paddingTop="15dp"
+        android:paddingBottom="17dp"
+        android:layout_marginBottom="16dp"
+        android:background="#FFFFFF"
+        android:textColor="#1379cd"
+        android:text="Cancel"
+        />
+
+</LinearLayout>

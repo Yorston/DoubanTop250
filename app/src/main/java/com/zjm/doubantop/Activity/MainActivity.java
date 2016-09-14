@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.drawable.ColorDrawable;
 import android.os.PersistableBundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -11,15 +12,22 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.zjm.doubantop.FileControler;
@@ -42,16 +50,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,AdapterView.OnItemClickListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,AdapterView.OnItemClickListener, View.OnClickListener {
 
     private ListView listview;
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
-
     private TextView textView;
-
     public static View v;
+    private View popview;
     private List<HashMap> list = new ArrayList();
     private NetWork netWork = NetWork.getNetWork();
     private MainListAdapter listadapter = MainListAdapter.getAdapter();
@@ -63,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private float mCurrentY;
     private ObjectAnimator mAnimator;
     private int direction;
+    private LayoutInflater inflater;
+    private PopupWindow popupWindow;
 
     View.OnTouchListener myTouchListener = new View.OnTouchListener() {
         @Override
@@ -127,12 +136,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             //NetWork.NextStart = 241;
         }
         listview.setOnScrollListener(listener);
+
+        popupWindow = new PopupWindow(popview, RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        //消失时亮度复原
+        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                WindowManager.LayoutParams lp = getWindow().getAttributes();
+                lp.alpha = 1f;
+                getWindow().setAttributes(lp);
+            }
+        });
+
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-
     }
 
     @Override
@@ -160,14 +180,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         list = (List<HashMap>) savedInstanceState.get("List");
     }
 
+    public void showPopupMenu(){
+        popupWindow.setFocusable(true);            // 设置焦点，默认，可以在构造方法中设置
+        popupWindow.setTouchable(true);            // 设置是否可以触摸事件
+        popupWindow.setBackgroundDrawable(new ColorDrawable(0x0e000000));// 如果可以点击周围关闭PopupWindow需要这只背景属性
+        popupWindow.setOutsideTouchable(true);    // 设置是否可以点击周围关闭PopupWindow
+        popupWindow.setClippingEnabled(true);      // 是否强制包含在屏幕范围内,默认true
+        popupWindow.update();
+        popupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);//防止遮挡虚拟键
+        View rootview = findViewById(R.id.listlayout);
+        popupWindow.showAtLocation(rootview,Gravity.BOTTOM, 0, 0);
+        //出现时背景变暗
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.alpha = 0.7f;
+        getWindow().setAttributes(lp);
+        TextView takevideo = (TextView) popview.findViewById(R.id.takevideo);
+        TextView takepicture = (TextView) popview.findViewById(R.id.takepicture);
+        TextView selpicture = (TextView) popview.findViewById(R.id.selectpicture);
+        TextView cancel = (TextView) popview.findViewById(R.id.cancel);
+        takevideo.setOnClickListener(this);
+        takepicture.setOnClickListener(this);
+        selpicture.setOnClickListener(this);
+        cancel.setOnClickListener(this);
+        popupWindow.update();
+    }
+
     public void initView(){
         listview = (ListView) findViewById(R.id.listview);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerlayout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
-
         textView = (TextView) findViewById(R.id.toolbattitle);
-
         View header = new View(this);
         header.setLayoutParams(new AbsListView.LayoutParams(
                 AbsListView.LayoutParams.MATCH_PARENT,
@@ -184,8 +227,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.setDrawerListener(toggle);
         toggle.syncState();
-        LayoutInflater inflater = LayoutInflater.from(this);
+        inflater = LayoutInflater.from(this);
         v = inflater.inflate(R.layout.load, null);
+        popview = inflater.inflate(R.layout.popmenu, null, false);
         listview.addFooterView(v);
     }
 
@@ -214,6 +258,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.takevideo:
+                popupWindow.dismiss();
+                break;
+            case R.id.takepicture:
+                popupWindow.dismiss();
+                break;
+            case R.id.selectpicture:
+                popupWindow.dismiss();
+                break;
+            case R.id.cancel:
+                popupWindow.dismiss();
+                break;
+        }
+    }
+
+    @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         MovieDetailActivity.launch(MainActivity.this, (String)list.get(i - 1).get("MovieCover"), (String)list.get(i - 1).get("MovieTitle"), (String)list.get(i - 1).get("BaseInfo"), (String)list.get(i - 1).get("ImageUrl"));
     }
@@ -233,7 +295,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-
         switch (item.getItemId()){
             case R.id.my_collection:
                 MyCollectionActivity.launch(MainActivity.this);
@@ -253,5 +314,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             new NewbieGuideManager(this, NewbieGuideManager.TYPE_COLLECT).addView(toolbar,
                     HoleBean.TYPE_RECTANGLE).show();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.mainmenu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu:
+                showPopupMenu();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onPause() {
+        popupWindow.dismiss();
+        super.onPause();
     }
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.example.menutest.MainActivity">
+
+    <item
+        android:id="@+id/menu"
+        android:icon="@drawable/ico_camera"
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        android:title="menu"/>
+
+</menu>
