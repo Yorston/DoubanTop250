@@ -38,6 +38,7 @@
                 android:textColor="#FFFFFF"
                 android:textSize="18dp"
                 android:text="豆瓣250"
+                tools:visibility="gone"
                 />
 
     </android.support.v7.widget.Toolbar>
@@ -52,7 +53,8 @@
             android:layout_gravity="start"
             android:fitsSystemWindows="true"
             app:headerLayout="@layout/navigationviewheader"
-            app:menu="@menu/drawermenu"/>
+            app:menu="@menu/drawermenu"
+            />
 
 
 </android.support.v4.widget.DrawerLayout>
